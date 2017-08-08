@@ -1,7 +1,7 @@
 {
     "name": "sterling-session",
     "homepage": "https://github.com/khrome/sterling-session",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "main": "sterling-session.js",
     "description": "Basic authentication and presence for sterling",
     "keywords": [
@@ -19,7 +19,7 @@
         "url": "git://github.com/khrome/sterling-session.git"
     },
     "dependencies": {
-        "seterling": "*",
+        "sterling": "*",
         "async-arrays": "*",
         "squalor": "*",
         "uuid": "*"
