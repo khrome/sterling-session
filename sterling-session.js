@@ -22,7 +22,7 @@
         serve : function(sterlingInstance, datasource, authFunction){
             var controls = {
                 handleRequest : function(id, req, res, cb){
-                    var query = 'SELECT * from Session where session = "'+id+'"'
+                    var query = 'SELECT * from Session where session = "'+id+'"';
                     datasource.query(
                         query,
                         function(error, results, fields){
@@ -59,15 +59,18 @@
                     if(!u) return cb(new Error('User not supplied'))
                     var act = function(user){
                         var id = uuid.v4();
-                        if(!user.id) return cb(new Error('User has no ID'))
+                        if(!user.id) return cb(new Error('User has no ID'));
                         datasource.query(SQL.save('Session', {
                             userid:user.id,
                             session:id
                         }), function (err, results, fields) {
                             if(err) throw err;
-                            datasource.query('SELECT * from Session where session ="'+id+'"', function (err, results, fields) {
-                                cb(undefined, results[0]);
-                            });
+                            datasource.query(
+                                'SELECT * from Session where session ="'+id+'"',
+                                function (err, results, fields){
+                                    cb(undefined, results[0]);
+                                }
+                            );
                         });
                     }
                     if(authFunction){
