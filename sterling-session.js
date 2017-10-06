@@ -34,7 +34,6 @@
                                 var user;
                                 req.user = function(cb){
                                     if(user) return cb(undefined, user);
-                                    console.log('USER CALLED');
                                     //try{
                                         authFunction({id:session.userid}, function(err, user){
                                             cb(err, user)
