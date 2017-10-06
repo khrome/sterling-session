@@ -34,6 +34,7 @@
                                 var user;
                                 req.user = function(cb){
                                     if(user) return cb(undefined, user);
+                                    console.log('USER CALLED');
                                     //try{
                                         authFunction({id:session.userid}, function(err, user){
                                             cb(err, user)
@@ -83,7 +84,7 @@
                     }
                 }
             };
-            var secureRoute = function(route, handler){
+            var secureRoute = function(route, handler, method){
                 //console.log('SR-a', route);
                 sterlingInstance.addRoute(route, function(){
                     //console.log('SR-e', arguments);
@@ -91,13 +92,19 @@
                     var args = Array.prototype.slice.call(arguments);
                     var session = arguments[0];
                     var ob = this;
+                    if((method || '').toUpperCase() !== this.req.method) return;
+                    if(this.req.routed){
+                        console.log('DOUBLE FETCHED');
+                        return;
+                    }
+                    this.req.routed = new Error().stack
                     controls.handleRequest(session, ob.res, ob.req, function(err){
+                        if(err) return sterlingInstance.error(ob.res, err, 401);
                         if(!ob.res.user){
                             return sterlingInstance.error(
                                 ob.res, new Error('No Authentication Methods'), 401
                             );
                         }
-                        if(err) return sterlingInstance.error(ob.res, err, 401);
                         handler.apply(ob, args);
                     });
                 });
@@ -109,7 +116,7 @@
                 }else{
                     Object.keys(handler).forEach(function(method){
                         var lowerMethod = method.toLowerCase();
-                        secureRoute(route, handler[lowerMethod]);
+                        secureRoute(route, handler[lowerMethod], method);
                     });
                 }
             }
