@@ -19,6 +19,7 @@
         loginVars : [
             'phone'
         ],
+        failCode : 401,
         serve : function(sterlingInstance, datasource, authFunction){
             var controls = {
                 handleRequest : function(id, req, res, cb){
@@ -91,22 +92,22 @@
                     var args = Array.prototype.slice.call(arguments);
                     var session = arguments[0];
                     var ob = this;
-                    if((method || '').toUpperCase() !== this.req.method) return;
+                    if((method || 'get').toUpperCase() !== this.req.method) return;
                     if(this.req.routed){
-                        console.log('DOUBLE FETCHED');
+                        console.log('DOUBLE FETCHED', this.req.routed, new Error().stack);
                         return;
                     }
-                    this.req.routed = new Error().stack
+                    this.req.routed = new Error().stack;
                     controls.handleRequest(session, ob.res, ob.req, function(err){
-                        if(err) return sterlingInstance.error(ob.res, err, 401);
+                        if(err) return sterlingInstance.error(ob.res, err, SterlingSession.failCode);
                         if(!ob.res.user){
                             return sterlingInstance.error(
-                                ob.res, new Error('No Authentication Methods'), 401
+                                ob.res, new Error('No Authentication Methods'), SterlingSession.failCode
                             );
                         }
                         handler.apply(ob, args);
                     });
-                });
+                }, method);
             }
 
             sterlingInstance.addSecureRoute = function(route, handler){
